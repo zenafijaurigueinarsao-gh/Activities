@@ -1,0 +1,191 @@
+package Inarsao;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.*;
+import java.io.*;
+
+public class ExpenseTracker extends JFrame {
+	JTextField receiptField, storeField, totalField, taxField, finalField;
+	JButton btnEnter, btnCancel;
+
+	JTable table;
+	DefaultTableModel model;
+
+	public static void main(String[] args) {
+        new ExpenseTracker();
+    }
+
+    public ExpenseTracker() {
+
+        setTitle("Expense Tracker");
+
+        JLabel title = new JLabel("Expense Tracker");
+        title.setBounds(130, 10, 200, 50);
+        add(title);
+
+        JLabel receiptLabel = new JLabel("Receipt Number:");
+        receiptLabel.setBounds(35, 57, 150, 30);
+        add(receiptLabel);
+
+        JLabel storeLabel = new JLabel("Store Name:");
+        storeLabel.setBounds(35, 98, 150, 30);
+        add(storeLabel);
+
+        JLabel totalLabel = new JLabel("Total Cost:");
+        totalLabel.setBounds(35, 138, 150, 30);
+        add(totalLabel);
+
+        JLabel taxLabel = new JLabel("Tax (12%):");
+        taxLabel.setBounds(35, 208, 150, 30);
+        add(taxLabel);
+
+        JLabel finalLabel = new JLabel("Final Amount:");
+        finalLabel.setBounds(35, 247, 150, 30);
+        add(finalLabel);
+
+        receiptField = new JTextField();
+        receiptField.setBounds(170, 60, 200, 25);
+        add(receiptField);
+
+        storeField = new JTextField();
+        storeField.setBounds(170, 100, 200, 25);
+        add(storeField);
+
+        totalField = new JTextField();
+        totalField.setBounds(170, 140, 200, 25);
+        add(totalField);
+
+        taxField = new JTextField();
+        taxField.setBounds(170, 210, 200, 25);
+        taxField.setEditable(false);
+        add(taxField);
+
+        finalField = new JTextField();
+        finalField.setBounds(170, 250, 200, 25);
+        finalField.setEditable(false);
+        add(finalField);
+
+        btnEnter = new JButton("Record");
+        btnEnter.setBounds(70, 310, 110, 30);
+        add(btnEnter);
+
+        btnCancel = new JButton("Clear");
+        btnCancel.setBounds(210, 310, 110, 30);
+        add(btnCancel);
+
+        // TABLE SETUP (RIGHT SIDE)
+        model = new DefaultTableModel();
+        model.setColumnIdentifiers(new String[]{
+                "Receipt", "Store", "Total", "Tax", "Final"
+        });
+
+        table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(410, 50, 450, 350); // RIGHT SIDE
+        add(scrollPane);
+
+        // LOAD DATA
+        loadData();
+
+        // RECORD BUTTON
+        btnEnter.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                String receipt = receiptField.getText();
+                String store = storeField.getText();
+                String totalText = totalField.getText();
+
+                if (receipt.isEmpty() || store.isEmpty() || totalText.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+                    return;
+                }
+
+                try {
+                    double total = Double.parseDouble(totalText);
+                    double tax = total * 0.12;
+                    double finalAmount = total + tax;
+
+                    taxField.setText(String.format("%.2f", tax));
+                    finalField.setText(String.format("%.2f", finalAmount));
+
+                    // SAVE TO FILE
+                    FileWriter fw = new FileWriter("ExpenseTracker_Table.txt", true);
+                    fw.write("Receipt: " + receipt + "\n");
+                    fw.write("Store: " + store + "\n");
+                    fw.write("Total: " + total + "\n");
+                    fw.write("Tax: " + tax + "\n");
+                    fw.write("Final: " + finalAmount + "\n");
+                    fw.write("----------------------\n");
+                    fw.close();
+
+                    // ADD TO TABLE
+                    model.addRow(new Object[]{
+                            receipt,
+                            store,
+                            String.format("%.2f", total),
+                            String.format("%.2f", tax),
+                            String.format("%.2f", finalAmount)
+                    });
+
+                    JOptionPane.showMessageDialog(null, "Input has Been Recorded");
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid number in Total Cost!");
+                }
+            }
+        });
+
+        // CLEAR BUTTON
+        btnCancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                receiptField.setText("");
+                storeField.setText("");
+                totalField.setText("");
+                taxField.setText("");
+                finalField.setText("");
+            }
+        });
+
+        setLayout(null);
+        setSize(900, 500); // WIDER FRAME
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+
+    // LOAD DATA USING BUFFEREDREADER
+    public void loadData() {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("ExpenseTracker_Table.txt"));
+            String line;
+
+            String receipt = "", store = "", total = "", tax = "", finalAmount = "";
+
+            while ((line = br.readLine()) != null) {
+
+                if (line.startsWith("Receipt:")) {
+                    receipt = line.replace("Receipt: ", "");
+                } else if (line.startsWith("Store:")) {
+                    store = line.replace("Store: ", "");
+                } else if (line.startsWith("Total:")) {
+                    total = line.replace("Total: ", "");
+                } else if (line.startsWith("Tax:")) {
+                    tax = line.replace("Tax: ", "");
+                } else if (line.startsWith("Final:")) {
+                    finalAmount = line.replace("Final: ", "");
+                } else if (line.startsWith("----------------------")) {
+
+                    model.addRow(new Object[]{
+                            receipt, store, total, tax, finalAmount
+                    });
+                }
+            }
+
+            br.close();
+
+        } catch (Exception e) {
+            System.out.println("No existing data found.");
+        }
+    }
+}
