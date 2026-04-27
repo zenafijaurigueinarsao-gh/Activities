@@ -1,0 +1,55 @@
+package zaji;
+
+import javax.swing.*;
+
+public class inarso {
+
+	public static void main(String[] args) {
+		JFrame frame = new JFrame("Inarsao");
+		frame.setSize(400,280);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		frame.setLayout(null);
+		
+		JLabel lblCustomer = new JLabel("Customer Type");
+		JLabel lblConsumption = new JLabel("Consumption");
+		JLabel lblTotal = new JLabel("Total Bill");
+		
+		JTextField tfCustomer = new JTextField();
+		JTextField tfConsumption = new JTextField();
+		JTextField tfTotal = new JTextField();
+				
+		JButton btnAdd = new JButton("Add");
+		JButton btnDelete = new JButton("Delete");
+		JButton btnUpdate = new JButton("Update");
+		
+		lblCustomer.setBounds(40, 40, 120, 25);
+		lblConsumption.setBounds(40, 80, 120, 25);
+		lblTotal.setBounds(40, 120, 120, 25);
+		
+		tfCustomer.setBounds(160, 40, 180, 25);
+		tfConsumption.setBounds(160, 80, 180, 25);
+		tfTotal.setBounds(160, 120, 180, 25);
+		
+		btnAdd.setBounds(40, 170, 90, 30);
+		btnDelete.setBounds(140, 170, 90, 30);
+		btnUpdate.setBounds(240, 170, 90, 30);
+		
+		frame.add(lblCustomer);
+		frame.add(lblConsumption);
+		frame.add(lblTotal);
+		
+		frame.add(tfCustomer);
+		frame.add(tfConsumption);
+		frame.add(tfTotal);
+		
+		frame.add(btnAdd);
+		frame.add(btnDelete);
+		frame.add(btnUpdate);
+		
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+
+	}
+
+}
