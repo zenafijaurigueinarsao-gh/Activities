@@ -1,0 +1,198 @@
+package Inarsao;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.io.*;
+
+public class EmployeeManagementSystem extends JFrame {
+private boolean isShaded = false;
+	
+	JTextField textId, textName, textBirth, textAge,
+    textNationality, textNumber, textEmail,
+    textDepartment, textJob;
+	
+	JComboBox<String> cbStatuss;
+	JRadioButton rbMale, rbFemale;
+	ButtonGroup genderGroup;
+	
+	JButton btnAdd;
+	
+	JTable table;
+	DefaultTableModel model;
+	
+	String fileName = "EmployeeManagementSystem.txt";
+
+    public EmployeeManagementSystem() {
+
+        setTitle("Employee Management System");
+        setSize(1000, 550);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JLabel lbltitle = new JLabel("EMS Inc.");
+        lbltitle.setBounds(40, 10, 200, 30);
+        add(lbltitle);
+
+        JLabel lblId = new JLabel("Employee ID");
+        lblId.setBounds(40, 50, 100, 20);
+        add(lblId);
+        
+        textId = new JTextField();
+        add(textId).setBounds(40, 70, 200, 20);
+
+        JLabel lblName = new JLabel("Fullname");
+        lblName.setBounds(40, 100, 100, 20);
+        add(lblName);
+        
+        textName = new JTextField();
+        add(textName).setBounds(40, 120, 200, 20);
+
+        JLabel lblBirth = new JLabel("Date of Birth");
+        lblBirth.setBounds(40, 150, 100, 20);
+        add(lblBirth);
+        
+        textBirth = new JTextField();
+        add(textBirth).setBounds(40, 170, 200, 20);
+
+        JLabel lblAge = new JLabel("Age");
+        lblAge.setBounds(280, 50, 100, 20);
+        add(lblAge);
+        
+        textAge= new JTextField();
+        add(textAge).setBounds(280, 70, 200, 20);
+
+        JLabel lblStatus = new JLabel("Civil Status");
+        lblStatus.setBounds(280, 100, 200, 20);
+        add(lblStatus);
+        String[] Status = {"Single", "Married", "Widowed", "Separated", "Divorced"};
+        
+        cbStatuss = new JComboBox<>(Status);
+        cbStatuss.setBounds(280, 120, 200, 20);
+        add(cbStatuss);
+        
+        JTextField textStatus= new JTextField();
+        add(textStatus).setBounds(280, 70, 20, 20);	
+        
+        JLabel lblNationality = new JLabel("Nationality");
+        lblNationality.setBounds(280, 150, 100, 20);
+        add(lblNationality);
+        
+        textNationality= new JTextField();
+        add(textNationality).setBounds(280, 170, 200, 20);
+        
+        JLabel lblGender = new JLabel("Gender");
+        lblGender.setBounds(520, 50, 100, 20);
+        add(lblGender);
+        
+        rbMale = new JRadioButton("Male");
+        rbFemale = new JRadioButton("Female");
+        
+        rbMale.setBounds(520, 70, 60, 20);
+        rbFemale.setBounds(580, 70, 80, 20);
+        
+        genderGroup = new ButtonGroup();
+        genderGroup.add(rbMale);
+        genderGroup.add(rbFemale);
+        
+        add(rbMale);
+        add(rbFemale);
+        
+        JLabel lblNumber = new JLabel("Contact Number");
+        lblNumber.setBounds(520, 100, 100, 20);
+        add(lblNumber);
+        
+        textNumber= new JTextField();
+        add(textNumber).setBounds(520, 120, 200, 20);
+        
+        JLabel lblEmail = new JLabel("Email");
+        lblEmail.setBounds(520, 150, 100, 20);
+        add(lblEmail);
+        
+        textEmail= new JTextField();
+        add(textEmail).setBounds(520, 170, 200, 20);
+        
+        JLabel lblDepartment = new JLabel("Department");
+        lblDepartment.setBounds(760, 100, 100, 20);
+        add(lblDepartment);
+        
+        textDepartment = new JTextField();
+        add(textDepartment).setBounds(760, 120, 200, 20);
+
+        JLabel lblJob = new JLabel("Job Title / Position");
+        lblJob.setBounds(760, 150, 150, 20);
+        add(lblJob);
+        
+        textJob= new JTextField();
+        add(textJob).setBounds(760, 170, 200, 20);
+        
+        btnAdd = new JButton("Add Employee");
+        btnAdd.setBounds(785, 210, 150, 20);
+        add(btnAdd);
+        
+        String[] columns = {"Employee ID", "Fullname", "Birth", "Age", "Civil Status", "Nationality", "Gender", "Contact", "Email", "Department", "Job Title/Position"};
+        
+        model = new DefaultTableModel(columns, 0);
+        table = new JTable(model);
+ 
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setBounds(40, 240, 920, 250);      
+        add(scroll);
+        
+        loadData();
+        
+        btnAdd.addActionListener( e -> addEmployee());
+    
+    setVisible(true);
+}
+    
+    private void addEmployee() {
+    	
+    	String gender = rbMale.isSelected() ? "Male" :
+    					rbFemale.isSelected() ? "Female" : "" ;
+    	
+    	String[] data = {textId.getText(), textName.getText(), textBirth.getText(), textAge.getText(), cbStatuss.getSelectedItem().toString(), textNationality.getText(), gender, textNumber.getText(), textEmail.getText(), textDepartment.getText(), textJob.getText()};
+    	
+    	model.addRow(data);
+    	
+    	try (FileWriter fw = new FileWriter(fileName, true)) {
+    		fw.write("Employee ID: " + data[0] + "\n");
+    		fw.write("Fullname: " + data[1] + "\n");
+    		fw.write("Date of Birth: " + data[2] + "\n");
+    		fw.write("Age: " + data[3] + "\n");
+    		fw.write("Civil Status: " + data[4] + "\n");
+    		fw.write("Nationality: " + data[5] + "\n");
+    		fw.write("Gender: " + data[6] + "\n");
+    		fw.write("Contact Number: " + data[7] + "\n");
+    		fw.write("Email: " + data[8] + "\n");
+    		fw.write("Department: " + data[9] + "\n");
+    		fw.write("Job Title / Position: " + data[10]);
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    	
+        JOptionPane.showMessageDialog(this, "Employee Added!");
+    }
+    
+    private void loadData() {
+    	try {
+    		File file = new File(fileName);
+    		if (!file.exists()) return;
+    		
+    		BufferedReader br = new BufferedReader(new FileReader(file));
+    		String line;
+    		
+    		while ((line = br.readLine()) != null) {
+    			model.addRow(line.split("#"));
+    		}
+    		
+    		br.close();
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    public static void main(String[] args) {
+        new EmployeeManagementSystem();
+    }
+}
