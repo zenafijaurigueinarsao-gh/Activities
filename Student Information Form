@@ -1,0 +1,220 @@
+package StudentInfo;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.table.DefaultTableModel;
+import java.io.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class StudentInformationForm extends JFrame{
+	
+	JTextField textName, textCourse, textSection;
+	
+	JButton btnAdd, btnDelete, btnUpdate, btnClear;
+	
+	JTable table;
+	DefaultTableModel model; 
+	
+	String filename = "StudentInformationForm.txt";
+	
+	public StudentInformationForm() {
+		
+		// frame
+		setTitle("Student Information Form");
+		setLayout(null);
+		setSize(460, 420);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// table
+		model = new DefaultTableModel();
+		model.setColumnIdentifiers(new String[]{"Name", "Course", "Section"});
+		
+		table = new JTable(model);
+		
+		JScrollPane pane = new JScrollPane(table);
+		pane.setBounds(20, 20, 410, 256);
+		add(pane);
+		
+		loadData();
+		
+		// name
+		JLabel labelName = new JLabel("Name");
+		labelName.setBounds(20, 280, 80, 25);
+		add(labelName);
+		
+		textName = new JTextField();
+		textName.setBounds(20, 300, 130, 20);
+		add(textName);
+		
+		// course
+		JLabel labelCourse = new JLabel("Course");
+		labelCourse.setBounds(160, 280, 80, 25);
+		add(labelCourse);
+		
+		textCourse = new JTextField();
+		textCourse.setBounds(160, 300, 130, 20);
+		add(textCourse);
+		
+		
+		// section
+		JLabel labelSection = new JLabel("Section");
+		labelSection.setBounds(300, 280, 80, 25);
+		add(labelSection);
+		
+		textSection = new JTextField();
+		textSection.setBounds(300, 300, 130, 20);
+		add(textSection);
+		
+		
+		// add button
+		btnAdd = new JButton("Add");
+		btnAdd.setBounds(20, 340, 95, 20);
+		add(btnAdd);
+		
+		// delete update
+		btnUpdate = new JButton("Update");
+		btnUpdate.setBounds(125, 340, 95, 20);
+		add(btnUpdate);
+		
+		// delete button
+		btnDelete = new JButton("Delete");
+		btnDelete.setBounds(230, 340, 95, 20);
+		add(btnDelete);
+		
+		// clear button
+		btnClear = new JButton("Clear");
+		btnClear.setBounds(335, 340, 95, 20);
+		add(btnClear);
+		
+		btnAdd.addActionListener(e -> Add());
+		btnDelete.addActionListener(e -> Delete());
+		btnUpdate.addActionListener(e -> Update());
+		btnClear.addActionListener(e -> Clear());
+		
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int row = table.getSelectedRow();
+				
+				textName.setText(model.getValueAt(row, 0).toString());
+				textCourse.setText(model.getValueAt(row, 1).toString());
+				textSection.setText(model.getValueAt(row, 2).toString());
+			}
+	});
+
+		setVisible(true);	
+	}
+	
+	public void Add() {
+		if (textName.getText().isEmpty() || textCourse.getText().isEmpty() || textSection.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Please fll up all the fields");
+			return;
+		}
+				
+		model.addRow(new Object[] {textName.getText(), textCourse.getText(), textSection.getText()});
+		
+		
+		saveAllToFile();
+		
+		JOptionPane.showMessageDialog(this, "Name Added!");
+	}
+	
+	public void Delete() {
+		int row = table.getSelectedRow();
+
+		if (row == -1) {
+			JOptionPane.showMessageDialog(null, "Selected a row to delete first");
+			return;
+		}
+		
+		int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this row?");
+		
+		if (confirm == JOptionPane.YES_OPTION) {
+		model.removeRow(row);
+		
+		saveAllToFile();
+		
+		JOptionPane.showMessageDialog(null, "Delete successfully!");
+		} else {
+			return;
+		}
+	}
+	
+	public void Update() {
+		int row = table.getSelectedRow();
+		
+		if (row == -1) {
+			JOptionPane.showMessageDialog(null, "Selected a row to update first");
+			return;
+	}
+				
+		model.setValueAt(textName.getText(), row, 0);
+		model.setValueAt(textCourse.getText(), row, 1);
+		model.setValueAt(textSection.getText(), row, 2);
+		
+		table.repaint();
+		
+		saveAllToFile();
+		
+		JOptionPane.showMessageDialog(null,  "Update successfully!");		
+	}
+	
+	public void Clear() {
+		textName.setText("");
+		textCourse.setText("");
+		textSection.setText("");
+		
+		table.clearSelection();
+	}
+	
+	public void saveAllToFile() {
+		try (PrintWriter pw  = new PrintWriter(new FileWriter(filename))) {
+			
+			for (int i = 0; i < model.getRowCount(); i++) {
+				StringBuilder sb = new StringBuilder();
+				
+				for (int j = 0; j < model.getColumnCount(); j++) {
+					sb.append(model.getValueAt(i, j));
+					
+					if (j < model.getColumnCount() -1) {
+						sb.append("#");
+					}
+				}
+				pw.println(sb.toString());
+			}
+			
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Save error!");
+		}
+	}
+	
+	public void loadData() {
+		File file = new File(filename);
+		if (!file.exists()) return;
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			
+			model.setRowCount(0);
+			
+			String line;
+			while ((line = br.readLine()) != null) {
+				String[] row =line.split("#");
+				
+				if (row.length == model.getColumnCount()) {
+					model.addRow(row);
+				}
+			}
+			
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Load error!");
+		}
+	}
+
+	public static void main(String[] args) {
+		new StudentInformationForm();
+	}
+
+}
