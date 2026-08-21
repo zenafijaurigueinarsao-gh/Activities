@@ -1,0 +1,235 @@
+package inarsao;
+
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class LabAct1 {
+
+	public static void main(String[] args) {
+
+		Scanner sc = new Scanner(System.in);
+		int choice;
+
+		while (true) {
+
+			System.out.println("\n========================================");
+			System.out.println("       JAVA REGEX ACTIVITY");
+			System.out.println("========================================");
+			System.out.println("1. Validate Student Information");
+			System.out.println("2. Check Password Strength");
+			System.out.println("3. Analyze Text");
+			System.out.println("4. Exit");
+			System.out.println("========================================");
+			System.out.print("Enter your choice: ");
+			choice = sc.nextInt();
+			sc.nextLine();
+
+			switch (choice) {
+
+			case 1:
+				validateStudentInformation(sc);
+				break;
+
+			case 2:
+				checkPasswordStrength(sc);
+				break;
+
+			case 3:
+				analyzeText();
+				break;
+
+			case 4:
+				System.out.println("\nThank you for using Java Regex Activity!");
+				sc.close();
+				return;
+
+			default:
+				System.out.println("\nInvalid choice. Please enter 1-4.");
+			}
+		}
+	}
+
+	public static void validateStudentInformation (Scanner sc) {
+
+		System.out.println("\n========== STUDENT INFORMATION ==========");
+
+		System.out.print("Enter Full Name: ");
+		String name = sc.nextLine();
+
+		System.out.print("Enter Email: ");
+		String email = sc.nextLine();
+
+		System.out.print("Enter Phone: ");
+		String phone = sc.nextLine();
+
+		System.out.print("Enter Student ID: ");
+		String id = sc.nextLine();
+
+		Pattern namePattern = Pattern.compile("^[A-za-z ]+$");
+		Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@gmail\\.com$");
+		Pattern phonePattern = Pattern.compile("^09[0-9]{9}$");
+		Pattern idPattern = Pattern.compile("^2026-[0-9]{5}$");
+
+		Matcher nameMatcher = namePattern.matcher(name);
+		Matcher emailMatcher = emailPattern.matcher(email);
+		Matcher phoneMatcher = phonePattern.matcher(phone);
+		Matcher idMatcher = idPattern.matcher(id);
+
+		System.out.println("\n========== VALIDATION RESULT ==========");
+
+		if (nameMatcher.find()) {
+			System.out.println("Name: VALID");
+		} else {
+			System.out.println("Name: INVALID");
+		}
+
+		if (emailMatcher.find()) {
+			System.out.println("Email: VALID");
+		} else {
+			System.out.println("Email: INVALID");
+		}
+
+		if (phoneMatcher.find()) {
+			System.out.println("Phone: VALID");
+		} else {
+			System.out.println("Phone: INVALID");
+		}
+
+		if (idMatcher.find()) {
+			System.out.println("Student ID: VALID");
+		} else {
+			System.out.println("Student ID: INVALID");
+		}
+	}
+
+	public static void checkPasswordStrength(Scanner sc) {
+
+		System.out.println("\n========== PASSWORD STRENGTH CHECKER ==========");
+
+		System.out.println("Enter Password: ");
+		String password = sc.nextLine();
+
+		Pattern lengthPattern = Pattern.compile(".{8,}");
+		Pattern uppercasePattern = Pattern.compile("[A-Z]");
+		Pattern lowercasePattern = Pattern.compile("[a-z]");
+		Pattern numberPattern = Pattern.compile("[0-9]");
+		Pattern characterPattern = Pattern.compile("[^A-Za-z0-9]");
+
+		Matcher lengthMatcher = lengthPattern.matcher(password);
+		Matcher uppercaseMatcher = uppercasePattern.matcher(password);
+		Matcher lowercaseMatcher = lowercasePattern.matcher(password);
+		Matcher numberMatcher = numberPattern.matcher(password);
+		Matcher characterMatcher = characterPattern.matcher(password);
+
+		int score = 0;
+
+		System.out.println("\n========== PASSWORD RESULT ==========");
+
+		if (lengthMatcher.find()) {
+			System.out.println("Minimum 8 characters : PASSED");
+			score++;
+		} else {
+			System.out.println("Minimum 8 characters : FAILED");
+		}
+
+		if (uppercaseMatcher.find()) {
+			System.out.println("Uppercase letter     : PASSED");
+			score++;
+		} else {
+			System.out.println("Uppercase letter     : FAILED");
+		}
+
+		if (lowercaseMatcher.find()) {
+			System.out.println("Lowercase letter     : PASSED");
+			score++;
+		} else {
+			System.out.println("Lowercase letter     : FAILED");
+		}
+
+		if (numberMatcher.find()) {
+			System.out.println("Number               : PASSED");
+			score++;
+		} else {
+			System.out.println("Number               : FAILED");
+		}
+
+		if (characterMatcher.find()) {
+			System.out.println("Special character    : PASSED");
+			score++;
+		} else {
+			System.out.println("Special character    : FAILED");
+		}
+
+		if (score == 5) {
+			System.out.println("\nPassword Strength: STRONG");
+		} else if (score >= 3) {
+			System.out.println("\n Password Strength: MEDIUM");
+		} else {
+			System.out.println("\nPassword Strength: WEAK");
+		}
+	}
+
+	public static void analyzeText() {
+
+		String text = "Welcome to Java Programming! "
+				+ "Contact us at java@gmail.com or support@school.edu. "
+				+ "For assistance, call 09171234567. "
+				+ "Our website is https://www.example.com. "
+				+ "The system contains 25 students and 5 instructors. ";
+
+		System.out.println("\n========== TEXT ANALYZER ==========");
+
+		Pattern emailPattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}");
+
+		Matcher emailMatcher = emailPattern.matcher(text);
+
+		System.out.println("\nEmail Addresses: ");
+
+		int count = 1;
+
+		while (emailMatcher.find()) {
+			System.out.println(count + ". " + emailMatcher.group());
+			count++;
+		}
+
+		Pattern phonePattern = Pattern.compile("09[0-9]{9}");
+
+		Matcher phoneMatcher = phonePattern.matcher(text);
+
+		System.out.println("\nPhone Numbers:");
+
+		count = 1;
+
+		while (phoneMatcher.find()) {
+			System.out.println(count + ". " + phoneMatcher.group());
+			count++;
+		}
+
+		Pattern numberPattern = Pattern.compile("\\b(?!09[0-9]{9}\\b)[0-9]+\\b");
+
+		Matcher numberMatcher = numberPattern.matcher(text);
+
+		System.out.println("\nNumbers:");
+
+		count = 1;
+
+		while (numberMatcher.find()) {
+			System.out.println(count + ". " + numberMatcher.group());
+			count++;
+		}
+
+		Pattern urlPattern = Pattern.compile("https?://[A-Za-z0-9.-]+\\.[A-Za-z]{2,}");
+
+		Matcher urlMatcher = urlPattern.matcher(text);
+		
+		System.out.println("\nWebsite URLs:");
+
+		count = 1;
+
+		while (urlMatcher.find()) {
+			System.out.println(count + ". " + urlMatcher.group());
+			count++;
+		}
+	}
+}
